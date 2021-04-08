@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Konsole Scratchpad
+Comment=Guake-type scratchpad
+Icon=utilities-terminal
+
+X-Plasma-API=javascript
+X-Plasma-MainScript=code/main.js
+
+X-KDE-PluginInfo-Author=Philipp Schmitt
+X-KDE-PluginInfo-Email=philipp@schmitt.co
+X-KDE-PluginInfo-Name=konsole-scratchpad
+X-KDE-PluginInfo-Version=1.0
+
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-ServiceTypes=KWin/Script
+Type=Service
