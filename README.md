@@ -20,7 +20,7 @@ following systemd user service:
 # ~/.config/systemd/user/konsole-scratchpad.service
 [Unit]
 Description=Konsole Scratchpad
-Description=https://github.com/pschmitt/kwin-konsole-scratchpad
+Documentation=https://github.com/pschmitt/kwin-konsole-scratchpad
 StartLimitBurst=200
 StartLimitIntervalSec=0.5
 
