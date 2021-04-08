@@ -16,7 +16,7 @@ Since this script is mainly intended to have a Konsole window stick to the
 bottom of the screen and show/hide on a keypress I suggest you create the 
 following systemd user service:
 
-```
+```ini
 # ~/.config/systemd/user/konsole-scratchpad.service
 [Unit]
 Description=Konsole Scratchpad
