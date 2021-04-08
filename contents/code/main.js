@@ -1,7 +1,18 @@
+// User preferences
 const resourceName = "konsole";
 const windowTitle = "tmux:scratchpad";
 const debug = true;
+const verbose = true; // Verbose logging. Requires debug=true
+const offset = 15; // Offset in pixels
+const scratchpadRelativeWidth = 1.0; // 100% of the usable screen area
+const scratchpadRelativeHeight = 0.5; // 50% of the usable screen area
+const keepAbove = true;
+const hideFromTaskbar = true;
+const hideFromSwitcher = true;
+const hideFromPager = true;
+const showOnAllDesktops = false;
 
+// Logic
 var watchedKonsoleWindows = [];
 
 function log(message) {
@@ -20,20 +31,19 @@ function objectToString(object) {
   return output
 }
 
-
 function setScratchpadProps(client) {
   const maxBounds = workspace.clientArea(
-    // KWin.MaximizeArea,
+    // NOTE We use KWin.PlacementArea instead of KWin.MaximizeArea here to
+    // avoid having to deal with panel sizes
     KWin.PlacementArea,
     workspace.activeScreen,
     workspace.currentDesktop
   );
 
   // Set scratchpad geometry
-  const offset = 15; // KWin.readConfig("offset", 25)
   const client_geom = client.geometry;
-  client_geom.width = maxBounds.width; // 100% width
-  client_geom.height = Math.round(maxBounds.height * 0.50); // 50% of usable screen
+  client_geom.width = Math.round(maxBounds.width * scratchpadRelativeWidth);
+  client_geom.height = Math.round(maxBounds.height * scratchpadRelativeHeight);
   client_geom.x = maxBounds.x;
   client_geom.y = maxBounds.height - client_geom.height + maxBounds.y + offset;
   client.geometry = client_geom;
@@ -41,18 +51,14 @@ function setScratchpadProps(client) {
   // Set core window props
   client.desktop = workspace.currentDesktop;
   client.minimized = false;
-  client.keepAbove = true;
-  client.onAllDesktops = false;
+  client.keepAbove = keepAbove;
+  client.onAllDesktops = showOnAllDesktops;
   client.activeClient = client;
 
   // Hide from taskbar etc.
-  client.skipSwitcher = true;
-  client.skipPager = true;
-  client.skipTaskbar = true;
-}
-
-function onClientCaptionChanged(client) {
-  log("Client caption changed! -> " + client.caption)
+  client.skipSwitcher = hideFromSwitcher;
+  client.skipPager = hideFromPager;
+  client.skipTaskbar = hideFromTaskbar;
 }
 
 function processClient(event, client) {
@@ -72,7 +78,10 @@ function processClient(event, client) {
     'client.resourceName="' + client.resourceName +
     '" - client.caption="' + client.caption + '"'
   );
-  // log("Dump: " + objectToString(client));
+
+  if (verbose == true) {
+    log("Dump: " + objectToString(client));
+  }
 
   if (client.resourceName == resourceName) {
     log("Client resource name matches :) [1/2]");
@@ -108,30 +117,7 @@ function processClient(event, client) {
 }
 
 // Register event listeners
-workspace.clientActivated.connect(function (client) {
-  processClient("clientActivated", client);
-});
-
-
+// FIXME How to unregister?!
 workspace.clientAdded.connect(function (client) {
   processClient("clientAdded", client);
 });
-
-// function shortcutHook() {
-//   /*const clients = workspace.clientList();
-//
-//   for (var i = 0; i < clients.length; i++) {
-//     var client = clients[i];
-//
-//     processClient("shortcut", client);
-//   }*/
-//
-//   log("Shortcut key pressed. Toggling konsole");
-//   callDBus("org.kde.kglobalaccel", "/component/konsole", "invokeShortcut", "Konsole Background Mode");
-// }
-//
-// // log("Registering shortcut")
-// registerShortcut("Konsole-Scratchpad", "Konsole Scratchpad Terminal", "F12", shortcutHook);
-
-// Debug
-// shortcutHook();
