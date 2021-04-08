@@ -22,8 +22,9 @@ const showOnAllDesktops = false;
 const watchFocussedClients = false;
 
 // Debug logging
-const debug = true;
-const verbose = true; // Verbose logging. Requires debug=true
+const debug = false;
+// Verbose logging. Requires debug=true
+const verbose = false;
 
 // Logic
 var watchedWindows = [];
@@ -36,10 +37,11 @@ function log(message) {
   print('[' + new Date().toISOString() + "] " + message);
 }
 
-function objectToString(object) {
+function objectToString(object, sep) {
   var output = '';
   for (var property in object) {
-    output += property + ': ' + object[property] + '\n';
+    output += property + ': ' + object[property] +
+      (sep == undefined ? '\n' : sep);
   }
   return output
 }
@@ -58,7 +60,8 @@ function setScratchpadProps(client) {
   client_geom.width = Math.round(maxBounds.width * scratchpadRelativeWidth);
   client_geom.height = Math.round(maxBounds.height * scratchpadRelativeHeight);
   // center client horizontally
-  client_geom.x = maxBounds.x + Math.round((maxBounds.width - client_geom.width) / 2);
+  client_geom.x = maxBounds.x +
+    Math.round((maxBounds.width - client_geom.width) / 2);
   client_geom.y = maxBounds.height - client_geom.height + maxBounds.y + offset;
   client.geometry = client_geom;
 
