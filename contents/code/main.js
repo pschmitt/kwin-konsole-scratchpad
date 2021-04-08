@@ -1,19 +1,23 @@
 // User preferences
 const resourceName = "konsole";
 const windowTitle = "tmux:scratchpad";
-const debug = true;
-const verbose = true; // Verbose logging. Requires debug=true
+// Size and placement
 const offset = 15; // Offset in pixels
 const scratchpadRelativeWidth = 1.0; // 100% of the usable screen area
 const scratchpadRelativeHeight = 0.5; // 50% of the usable screen area
+// Skip pager/switcher/taskbar
 const keepAbove = true;
 const hideFromTaskbar = true;
 const hideFromSwitcher = true;
 const hideFromPager = true;
 const showOnAllDesktops = false;
 
+// Debug logging
+const debug = true;
+const verbose = true; // Verbose logging. Requires debug=true
+
 // Logic
-var watchedKonsoleWindows = [];
+var watchedWindows = [];
 
 function log(message) {
   if (debug == false) {
@@ -97,12 +101,12 @@ function processClient(event, client) {
       rc = false;
 
       // FIXME client.windowID is always 0 (on Wayland at least)
-      if (watchedKonsoleWindows.indexOf(client.internalId) > -1) {
+      if (watchedWindows.indexOf(client.internalId) > -1) {
         log("We are already watching this konsole window for caption changes [2/2]");
         log("internalId=" + client.internalId);
       } else {
         log("Caption does not match. But we'll be watching for caption changes [2/2]");
-        watchedKonsoleWindows.push(client.internalId);
+        watchedWindows.push(client.internalId);
         client.captionChanged.connect(function () {
           processClient("captionChanged", client);
         });
