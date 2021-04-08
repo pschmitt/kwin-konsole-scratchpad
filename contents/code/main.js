@@ -1,16 +1,25 @@
 // User preferences
 const resourceName = "konsole";
 const windowTitle = "tmux:scratchpad";
+
 // Size and placement
 const offset = 15; // Offset in pixels
 const scratchpadRelativeWidth = 1.0; // 100% of the usable screen area
 const scratchpadRelativeHeight = 0.5; // 50% of the usable screen area
+
 // Skip pager/switcher/taskbar
 const keepAbove = true;
 const hideFromTaskbar = true;
 const hideFromSwitcher = true;
 const hideFromPager = true;
 const showOnAllDesktops = false;
+
+// Additional events to watch for
+// FIXME Setting the following to true has the potential to really slow down
+// KWin. Having it set to false has the negative side effect of not setting the
+// window properties of the target if it is started *before* this script gets
+// executed though.
+const watchFocussedClients = false;
 
 // Debug logging
 const debug = true;
@@ -48,7 +57,8 @@ function setScratchpadProps(client) {
   const client_geom = client.geometry;
   client_geom.width = Math.round(maxBounds.width * scratchpadRelativeWidth);
   client_geom.height = Math.round(maxBounds.height * scratchpadRelativeHeight);
-  client_geom.x = maxBounds.x;
+  // center client horizontally
+  client_geom.x = maxBounds.x + Math.round((maxBounds.width - client_geom.width) / 2);
   client_geom.y = maxBounds.height - client_geom.height + maxBounds.y + offset;
   client.geometry = client_geom;
 
@@ -125,3 +135,9 @@ function processClient(event, client) {
 workspace.clientAdded.connect(function (client) {
   processClient("clientAdded", client);
 });
+
+if (watchFocussedClients == true) {
+  workspace.clientActivated.connect(function (client) {
+    processClient("clientActivated", client);
+  });
+}
