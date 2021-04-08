@@ -116,7 +116,6 @@ function processClient(event, client) {
       // FIXME client.windowID is always 0 (on Wayland at least)
       if (watchedWindows.indexOf(client.internalId) > -1) {
         log("We are already watching this konsole window for caption changes [2/2]");
-        log("internalId=" + client.internalId);
       } else {
         log("Caption does not match. But we'll be watching for caption changes [2/2]");
         watchedWindows.push(client.internalId);
