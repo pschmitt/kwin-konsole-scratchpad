@@ -28,8 +28,7 @@ ExecStart=/usr/bin/konsole \
   --background-mode \
   --hide-tabbar \
   --hide-menubar \
-  --profile scratchpad \
-  -e zhj konsole-scratchpad
+  --profile scratchpad
 Restart=always
 RestartSec=3
 
