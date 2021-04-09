@@ -7,8 +7,7 @@ Exec=konsole \
     --background-mode \
     --hide-tabbar \
     --hide-menubar \
-    --profile scratchpad \
-    -e zhj konsole-scratchpad
+    --profile scratchpad
 Icon=utilities-terminal
 Terminal=false
 Categories=Qt;KDE;System;TerminalEmulator;
