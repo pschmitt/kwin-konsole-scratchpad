@@ -23,6 +23,9 @@ const verbose = false;
 
 // Logic
 var startTime;
+var watchedClients = [];
+var watchers = [];
+var signalSetup = false;
 
 // Debug functions {{{
 function log(message) {
@@ -75,9 +78,17 @@ function setWindowProps(client) {
   client.skipTaskbar = hideFromTaskbar;
 }
 
-function processClient(client) {
+function isValidClient(client) {
   if (client == undefined || client.caption == undefined) {
     log("😕 Unprocessable/invalid client. SKIP");
+    log(objectToString(client));
+    return false;
+  }
+  return true;
+}
+
+function processClient(client) {
+  if (!isValidClient(client)) {
     return false;
   }
 
@@ -86,16 +97,19 @@ function processClient(client) {
     log(objectToString(client));
   }
 
-  if (client.resourceName == resourceName &&
-    client.caption.indexOf(caption) > -1) {
-    log("✅ Found scratchpad: " + client.caption);
-    return true;
+  if (client.resourceName == resourceName) {
+    if (client.caption.indexOf(caption) > -1) {
+      log("✅ Found scratchpad: " + client.caption);
+      return true;
+    } else {
+      monitorClientCaptionChanges(client);
+    }
   }
 
   return false;
 }
 
-const scratchpadWatcher = function (client) {
+const newWindowWatcher = function (client) {
   if (workspace == undefined) {
     log("💩 Workspace is undefined. We probably got cancelled.");
     disconnectSignals();
@@ -123,16 +137,66 @@ const scratchpadWatcher = function (client) {
 function disconnectSignals() {
   log("🌜 Disconnecting from signals");
 
-  workspace.clientAdded.disconnect(scratchpadWatcher);
-  workspace.clientActivated.disconnect(scratchpadWatcher);
+  workspace.clientAdded.disconnect(newWindowWatcher);
+  workspace.clientActivated.disconnect(newWindowWatcher);
+
+  for (var i = 0; i < watchedClients.length; i++) {
+    log("🌚 Disconnect from " + watchedClients[i]);
+    watchedClients[i].captionChanged.disconnect(watchers[i]);
+  }
+}
+
+function isAlreadyMonitored(client) {
+  for (var i = 0; i < watchedClients.length; i++) {
+    if (watchedClients[i].internalId == client.internalId) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function monitorClientCaptionChanges(client) {
+  if (isAlreadyMonitored(client)) {
+    log("🥂 We are already watching this client for caption changes");
+    return false;
+  }
+
+  log("📷 Caption does not match. " +
+    "But we'll be watching for caption changes");
+  watchedClients.push(client);
+  var watcher = function () {newWindowWatcher(client);}
+  var num = watchers.push(watcher);
+  client.captionChanged.connect(watcher);
+  log("🛂 We're currently watching " + num + " clients")
+  return true;
 }
 
 function connectSignals() {
   log("🔆 Connecting to signals");
 
   startTime = new Date();
-  workspace.clientAdded.connect(scratchpadWatcher);
-  workspace.clientActivated.connect(scratchpadWatcher);
+
+  // Monitor existing clients
+  const clients = workspace.clientList();
+  for (var i = 0; i < clients.length; i++) {
+    const cl = clients[i];
+
+    log("Checking Existing client: " + cl);
+
+    if (isValidClient(cl)) {
+      if (processClient(cl)) {
+        setWindowProps(cl);
+        disconnectSignals();
+        return true;
+      } else if (cl.resourceName == resourceName) {
+        monitorClientCaptionChanges(cl);
+      }
+    }
+  }
+
+  // Monitor new clients
+  workspace.clientAdded.connect(newWindowWatcher);
+  workspace.clientActivated.connect(newWindowWatcher);
 }
 
 function toggleScratchpad() {
