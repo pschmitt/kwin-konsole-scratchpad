@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=Konsole Scratchpad
+Type=Application
+TryExec=konsole
+# We do execute true here so that the active tabs get immediately closed and the
+# tmad tab becomes the active one
+Exec=sh -c "while true; do konsole \
+    --nofork \
+    --background-mode \
+    --hide-tabbar \
+    --hide-menubar \
+    --profile scratchpad \
+    -e zhj konsole-scratchpad; sleep 0.5; done"
+Icon=utilities-terminal
+Terminal=false
+Categories=Qt;KDE;System;TerminalEmulator;
+X-DocPath=konsole/index.html
+X-DBUS-StartupType=Unique
+StartupNotify=true
+X-KDE-AuthorizeAction=shell_access
+StartupWMClass=konsole
