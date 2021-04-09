@@ -93,7 +93,8 @@ function searchScratchpadWindow() {
   for (var i = 0; i < clients.length; i++) {
     client = clients[i];
 
-    log("Processing client #" + (i + 1) + "/" + clients.length + ": " + client.caption);
+    log("Processing client #" + (i + 1) + "/" + clients.length + ": " +
+      client.caption);
     if (verbose == true) {
       log(objectToString(client));
     }
@@ -110,7 +111,8 @@ function searchScratchpadWindow() {
 
 function toggleScratchpad() {
   // FIXME The callback is probably called too early here.
-  // There might be a delay between the DBUS call and the Konsole window appearing.
+  // There might be a delay between the DBUS call and the Konsole window
+  // appearing.
   callDBus(
     "org.kde.kglobalaccel",
     "/component/konsole",
@@ -122,6 +124,6 @@ function toggleScratchpad() {
 }
 
 // Debug - Uncomment when in interactive KWin Console
-toggleScratchpad();
+// toggleScratchpad();
 
 /* vim: set ft=javascript et ts=2 sw=2 :*/
