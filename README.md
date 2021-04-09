@@ -8,22 +8,39 @@ This here is a KWin script that makes Konsole behave more like Guake does.
 2. `cd ./kwin-konsole-scratchpad`
 3. Edit settings in [`./contents/code/main.js`](./contents/code/main.js)
 4. Run [`./install.sh`](./install.sh)
-5. Open System Settings: `Window Management > KWin Scripts` and make sure that "Konsole Scratchpad" is enabled
+5. Open System Settings: `Window Management > KWin Scripts` and make sure 
+that "Konsole Scratchpad" is enabled
+6. *Optional* Setup a custom key binding for "Toggle Konsole Scratchpad"
 
-## Optional: Setup a scratchpad
+## Optional: Setup a scratchpad service
 
 Since this script is mainly intended to have a Konsole window stick to the
 bottom of the screen and show/hide on a keypress I suggest you autostart 
-konsole using the desktop file in 
-[./extra/konsole-scratchpad.desktop](./extra/konsole-scratchpad.desktop):
+konsole via one of the following methods:
+
+### Desktop file
+
+See [./extra/konsole-scratchpad.desktop](./extra/konsole-scratchpad.desktop)
+
+To install:
 
 ```shell
 cp ./extra/konsole-scratchpad.desktop ~/.config/autostart
 ```
 
-You should then be able to show/hide your scratchpad with the 
-"Toggle Background Window" shortcut 
-(<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F12</kbd> by default)
+### systemd user service
+
+See [./extra/konsole-scratchpad.service](./extra/konsole-scratchpad.service)
+
+To install:
+
+```shell
+cp ./extra/konsole-scratchpad.service ~/.config/systemd/user
+systemctl --user enable --now konsole-scratchpad.service
+```
+
+Once done you should be able to show/hide your Konsole scratchpad with the 
+"Toggle Konsole Scratchpad" shortcut (<kbd>F1</kbd> by default)
 
 # Uninstall
 

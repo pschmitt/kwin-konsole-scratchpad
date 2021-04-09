@@ -1,6 +1,6 @@
 // User preferences
 const resourceName = "konsole";
-const windowTitle = "tmux:scratchpad";
+const caption = "tmux:scratchpad";
 
 // Size and placement
 const offset = 15; // Offset in pixels
@@ -14,22 +14,17 @@ const hideFromSwitcher = true;
 const hideFromPager = true;
 const showOnAllDesktops = false;
 
-// Additional events to watch for
-// FIXME Setting the following to true has the potential to really slow down
-// KWin. Having it set to false has the negative side effect of not setting the
-// window properties of the target if it is started *before* this script gets
-// executed though.
-const watchFocussedClients = false;
-const watchForCaptionChanges = false;
-
+// How long to look for scratchpads
+const maxRuntime = 10000; // 10s
 // Debug logging
 const debug = false;
 // Verbose logging. Requires debug=true
 const verbose = false;
 
 // Logic
-var watchedWindows = [];
+var startTime;
 
+// Debug functions {{{
 function log(message) {
   if (debug == false) {
     return
@@ -46,8 +41,9 @@ function objectToString(object, sep) {
   }
   return output
 }
+// }}}
 
-function setScratchpadProps(client) {
+function setWindowProps(client) {
   const maxBounds = workspace.clientArea(
     // NOTE We use KWin.PlacementArea instead of KWin.MaximizeArea here to
     // avoid having to deal with panel sizes
@@ -79,70 +75,84 @@ function setScratchpadProps(client) {
   client.skipTaskbar = hideFromTaskbar;
 }
 
-function processClient(event, client) {
-  log("Event: " + event);
-
-  if (client == undefined) {
-    log("Undefined client");
+function processClient(client) {
+  if (client == undefined || client.caption == undefined) {
+    log("😕 Unprocessable/invalid client. SKIP");
     return false;
   }
 
-  if (client.caption == undefined) {
-    log("Undefined caption");
-    return false;
-  }
-
-  log(
-    'client.resourceName="' + client.resourceName +
-    '" - client.caption="' + client.caption + '"'
-  );
-
+  log("🔍 Processing client: " + client.caption);
   if (verbose == true) {
-    log("Dump: " + objectToString(client));
+    log(objectToString(client));
   }
 
-  if (client.resourceName == resourceName) {
-    log("Client resource name matches :) [1/2]");
-    var rc = false;
-
-    // FIXME Why can't we use contains or includes here?
-    if (client.caption.indexOf(windowTitle) > -1) {
-      log("Client window title (caption) matches! [2/2]");
-      setScratchpadProps(client);
-      rc = true;
-
-    } else {
-      rc = false;
-
-      if (watchForCaptionChanges == true) {
-        // FIXME client.windowID is always 0 (on Wayland at least)
-        if (watchedWindows.indexOf(client.internalId) > -1) {
-          log("We are already watching this konsole window for caption changes [2/2]");
-        } else {
-          log("Caption does not match. But we'll be watching for caption changes [2/2]");
-          watchedWindows.push(client.internalId);
-          client.captionChanged.connect(function () {
-            processClient("captionChanged", client);
-          });
-        }
-      }
-    }
-
-    return rc;
+  if (client.resourceName == resourceName &&
+    client.caption.indexOf(caption) > -1) {
+    log("✅ Found scratchpad: " + client.caption);
+    return true;
   }
 
-  log("Client is *NOT* matching criteria [2/2]");
   return false;
 }
 
-// Register event listeners
-// FIXME How to unregister?!
-workspace.clientAdded.connect(function (client) {
-  processClient("clientAdded", client);
-});
+const scratchpadWatcher = function (client) {
+  if (workspace == undefined) {
+    log("💩 Workspace is undefined. We probably got cancelled.");
+    disconnectSignals();
+  }
 
-if (watchFocussedClients == true) {
-  workspace.clientActivated.connect(function (client) {
-    processClient("clientActivated", client);
-  });
+  const runtime = new Date() - startTime;
+  if (runtime > maxRuntime) {
+    log("⌛ Timed out. It's been fun. Now let's seppuku real quick.");
+    if (verbose == true) {
+      log("🕜 Runtime: " + runtime + "ms");
+    }
+    disconnectSignals();
+    return false;
+  }
+
+  if (processClient(client)) {
+    setWindowProps(client);
+    disconnectSignals();
+    return true;
+  }
+
+  return false;
 }
+
+function disconnectSignals() {
+  log("🌜 Disconnecting from signals");
+
+  workspace.clientAdded.disconnect(scratchpadWatcher);
+  workspace.clientActivated.disconnect(scratchpadWatcher);
+}
+
+function connectSignals() {
+  log("🔆 Connecting to signals");
+
+  startTime = new Date();
+  workspace.clientAdded.connect(scratchpadWatcher);
+  workspace.clientActivated.connect(scratchpadWatcher);
+}
+
+function toggleScratchpad() {
+  callDBus(
+    "org.kde.kglobalaccel",
+    "/component/konsole",
+    "org.kde.kglobalaccel.Component",
+    "invokeShortcut",
+    "Konsole Background Mode",
+    function () {connectSignals();}
+  );
+}
+
+// Debug - Uncomment when in interactive KWin Console
+// toggleScratchpad();
+
+registerShortcut(
+  "Konsole Scratchpad",
+  "Toggle Konsole Scratchpad",
+  "F1",
+  function () {toggleScratchpad();});
+
+/* vim: set ft=javascript et ts=2 sw=2 :*/
