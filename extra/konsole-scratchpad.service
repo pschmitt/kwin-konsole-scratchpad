@@ -1,0 +1,21 @@
+[Unit]
+Description=Konsole scratchpad
+Documentation=https://github.com/pschmitt/kwin-scratchpad
+
+[Service]
+ExecStart=/usr/bin/sh -c "\
+  notify-send -t 1000 -a '%N' \
+    'Background Konsole is starting...'; \
+  konsole \
+    --nofork \
+    --background-mode \
+    --hide-tabbar \
+    --hide-menubar \
+    --profile scratchpad; \
+  notify-send -t 1000 -a '%N' \
+    'Background Konsole stopped..!'"
+Restart=always
+RestartSec=0.25
+
+[Install]
+WantedBy=basic.target
