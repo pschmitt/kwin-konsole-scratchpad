@@ -20,6 +20,7 @@ const showOnAllDesktops = false;
 // window properties of the target if it is started *before* this script gets
 // executed though.
 const watchFocussedClients = false;
+const watchForCaptionChanges = false;
 
 // Debug logging
 const debug = false;
@@ -113,22 +114,24 @@ function processClient(event, client) {
     } else {
       rc = false;
 
-      // FIXME client.windowID is always 0 (on Wayland at least)
-      if (watchedWindows.indexOf(client.internalId) > -1) {
-        log("We are already watching this konsole window for caption changes [2/2]");
-      } else {
-        log("Caption does not match. But we'll be watching for caption changes [2/2]");
-        watchedWindows.push(client.internalId);
-        client.captionChanged.connect(function () {
-          processClient("captionChanged", client);
-        });
+      if (watchForCaptionChanges == true) {
+        // FIXME client.windowID is always 0 (on Wayland at least)
+        if (watchedWindows.indexOf(client.internalId) > -1) {
+          log("We are already watching this konsole window for caption changes [2/2]");
+        } else {
+          log("Caption does not match. But we'll be watching for caption changes [2/2]");
+          watchedWindows.push(client.internalId);
+          client.captionChanged.connect(function () {
+            processClient("captionChanged", client);
+          });
+        }
       }
     }
 
     return rc;
   }
 
-  log("Client is *NOT* matching criteria");
+  log("Client is *NOT* matching criteria [2/2]");
   return false;
 }
 
