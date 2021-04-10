@@ -3,6 +3,9 @@ const resourceName = "konsole";
 const caption = "tmux:scratchpad";
 
 // Size and placement
+// where to place the scatchpad on the screen
+// Allowed values: "top", "bottom", "center"
+const position = "bottom";
 const offset = 15; // Offset in pixels
 const scratchpadRelativeWidth = 1.0; // 100% of the usable screen area
 const scratchpadRelativeHeight = 0.5; // 50% of the usable screen area
@@ -59,10 +62,29 @@ function setWindowProps(client) {
   const client_geom = client.geometry;
   client_geom.width = Math.round(maxBounds.width * scratchpadRelativeWidth);
   client_geom.height = Math.round(maxBounds.height * scratchpadRelativeHeight);
-  // center client horizontally
-  client_geom.x = maxBounds.x +
-    Math.round((maxBounds.width - client_geom.width) / 2);
-  client_geom.y = maxBounds.height - client_geom.height + maxBounds.y + offset;
+  switch (position) {
+    case "bottom":
+      // center client horizontally
+      client_geom.x = maxBounds.x +
+        Math.round((maxBounds.width - client_geom.width) / 2);
+      client_geom.y = maxBounds.height - client_geom.height +
+        maxBounds.y + offset;
+      break;
+    case "top":
+      // center client horizontally
+      client_geom.x = maxBounds.x +
+        Math.round((maxBounds.width - client_geom.width) / 2);
+      client_geom.y = maxBounds.y + offset;
+      break;
+    case "center":
+      // center client horizontally
+      client_geom.x = maxBounds.x +
+        Math.round((maxBounds.width - client_geom.width) / 2);
+      // center client vertically
+      client_geom.y = maxBounds.y +
+        Math.round((maxBounds.height - client_geom.height) / 2);
+      break;
+  }
   client.geometry = client_geom;
 
   // Set core window props
