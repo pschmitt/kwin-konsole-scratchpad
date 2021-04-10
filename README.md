@@ -10,13 +10,13 @@ git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git
 cd ./kwin-konsole-scratchpad
 ```
 2. Choose one of the following two install paths:
-  - Shortcut only (**recommended**)
-  - KWin script
+  - [Shortcut only](#tldr-shortcut-only) (**recommended**)
+  - [KWin script](#install-as-a-kwin-script)
 
 ## TL;DR (Shortcut only)
 
 1. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
-3. Set up a scratchpad service (see below)
+2. Set up a scratchpad service (see below)
 
 ## Install as a KWin script
 
