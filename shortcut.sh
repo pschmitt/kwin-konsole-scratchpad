@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 generate_file_content() {
-  cat contents/code/main.js
-  echo "toggleScratchpad();"
+  sed \
+    's/^main();$/mainInteractive();/' \
+    contents/code/main.js
 }
 
 create_file() {

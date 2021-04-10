@@ -232,13 +232,24 @@ function toggleScratchpad() {
   );
 }
 
-// Debug - Uncomment when in interactive KWin Console
-// toggleScratchpad();
 
-registerShortcut(
-  "Konsole Scratchpad",
-  "Toggle Konsole Scratchpad",
-  "F1",
-  function () {toggleScratchpad();});
+// Main wrapper for toggleScratchpad, call this instead of main() when running
+// inside of the KWin debug console
+function mainInteractive() {
+  toggleScratchpad();
+}
+
+// main function - to be called when installing this as a standalone KWin script
+function main() {
+  registerShortcut(
+    "Konsole Scratchpad",
+    "Toggle Konsole Scratchpad",
+    "F1",
+    function () {toggleScratchpad();});
+}
+
+// DEBUG
+// mainInteractive();
+main();
 
 /* vim: set ft=javascript et ts=2 sw=2 :*/
