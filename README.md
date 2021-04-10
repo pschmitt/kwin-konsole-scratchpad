@@ -4,25 +4,28 @@ This here is a KWin script that makes Konsole behave more like Guake does.
 
 # Installation
 
-## TL;DR (Shortcut only)
-
-1. `git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git`
-2. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
-3. Set up a scratchpad service (see below)
-
-## Install as a KWin script
-
 1. Clone this repository
 ```shell
 git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git
 cd ./kwin-konsole-scratchpad
 ```
-3. Edit settings in [`./contents/code/main.js`](./contents/code/main.js)
-4. Run [`./install.sh`](./install.sh)
-5. Open System Settings: `Window Management > KWin Scripts` and make sure 
+2. Choose one of the following two install paths:
+  - Shortcut only (**recommended**)
+  - KWin script
+
+## TL;DR (Shortcut only)
+
+1. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
+3. Set up a scratchpad service (see below)
+
+## Install as a KWin script
+
+1. Edit settings in [`./contents/code/main.js`](./contents/code/main.js)
+2. Run [`./install.sh`](./install.sh)
+3. Open System Settings: `Window Management > KWin Scripts` and make sure 
 that "Konsole Scratchpad" is enabled
-6. *Optional* Setup a custom key binding for "Toggle Konsole Scratchpad"
-7. Set up a scratchpad service (see below)
+4. Setup a custom key binding for "Toggle Konsole Scratchpad"
+5. Set up a scratchpad service (see below)
 
 ## Setup a scratchpad service
 
