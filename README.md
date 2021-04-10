@@ -4,6 +4,15 @@ This here is a KWin script that makes Konsole behave more like Guake does.
 
 # Installation
 
+## TL;DR (Shortcut only)
+
+1. `git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git`
+2. `cd ./kwin-konsole-scratchpad`
+3. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
+4. Set up a scratchpad service (see below)
+
+## Install as a KWin script
+
 1. `git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git`
 2. `cd ./kwin-konsole-scratchpad`
 3. Edit settings in [`./contents/code/main.js`](./contents/code/main.js)
@@ -11,8 +20,9 @@ This here is a KWin script that makes Konsole behave more like Guake does.
 5. Open System Settings: `Window Management > KWin Scripts` and make sure 
 that "Konsole Scratchpad" is enabled
 6. *Optional* Setup a custom key binding for "Toggle Konsole Scratchpad"
+7. Set up a scratchpad service (see below)
 
-## Optional: Setup a scratchpad service
+## Setup a scratchpad service
 
 Since this script is mainly intended to have a Konsole window stick to the
 bottom of the screen and show/hide on a keypress I suggest you autostart 
@@ -45,7 +55,7 @@ Once done you should be able to show/hide your Konsole scratchpad with the
 # Uninstall
 
 1. Run [`./uninstall.sh`](./uninstall.sh)
-2. Restart KWin
+2. Restart KWin 🤷
 
 # Inspiration and credits
 
