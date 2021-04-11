@@ -18,7 +18,7 @@ const hideFromPager = true;
 const showOnAllDesktops = false;
 
 // How long to look for scratchpads
-const maxRuntime = 10000; // 10s
+const maxRuntime = 5000; // 5s
 // Debug logging
 const debug = false;
 // Verbose logging. Requires debug=true
