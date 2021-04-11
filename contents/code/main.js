@@ -157,15 +157,19 @@ const newWindowWatcher = function (client) {
 }
 
 function disconnectSignals() {
-  log("🌜 Disconnecting from signals");
+  log("🌜 Disconnecting from all signals");
 
   workspace.clientAdded.disconnect(newWindowWatcher);
   workspace.clientActivated.disconnect(newWindowWatcher);
 
   for (var i = 0; i < watchedClients.length; i++) {
-    log("🌚 Disconnect from " + watchedClients[i]);
+    log('🌚 Disconnecting from "' + watchedClients[i].caption + '"');
     watchedClients[i].captionChanged.disconnect(watchers[i]);
   }
+
+  // Clear arrays
+  watchedClients.length = 0;
+  watchers.length = 0;
 }
 
 function isAlreadyMonitored(client) {
