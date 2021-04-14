@@ -8,7 +8,7 @@ patch_script() {
   local content
   content="$(sed 's/^main();$/mainInteractive();/' "$SCRIPT")"
 
-  if command -v uglifyjs >/dev/null
+  if [[ -z "$NOCOMPRESS" ]] && command -v uglifyjs >/dev/null
   then
     uglifyjs \
       --compress \
@@ -26,11 +26,19 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
 
-  patch_script > "$SCRIPT_MOD"
-  trap 'rm -f "$SCRIPT_MOD"' EXIT INT
-
   # Check if we are being run with -x (as in bash -x ./shortcut.sh)
   # and pass the -x along to run.sh if it the case
-  [[ "$-" =~ x ]] && bash_opts="-x"
+  if [[ "$-" =~ x ]]
+  then
+    # Add -x to the bash opts for run.sh
+    bash_opts="-x"
+    # Do not run uglifyjs over our main script
+    NOCOMPRESS=1
+  else
+    # Don't remove the generated script if run with -x
+    trap 'rm -f "$SCRIPT_MOD"' EXIT INT
+  fi
+
+  patch_script > "$SCRIPT_MOD"
   bash $bash_opts ./run.sh "$SCRIPT_MOD"
 fi
