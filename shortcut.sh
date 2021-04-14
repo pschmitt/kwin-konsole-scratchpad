@@ -40,5 +40,12 @@ then
   fi
 
   patch_script > "$SCRIPT_MOD"
-  bash $bash_opts ./run.sh "$SCRIPT_MOD"
+  if ! bash $bash_opts ./run.sh "$SCRIPT_MOD"
+  then
+    notify-send \
+      -u critical \
+      -t 5000 \
+      -a konsole-scratchpad \
+      "❌ Something went wrong while executing konsole-scratchpad's run.sh"
+  fi
 fi
