@@ -17,6 +17,8 @@ cd ./kwin-konsole-scratchpad
 
 1. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
 2. Set up a scratchpad service (see below)
+3. *Optional* Install [uglifyjs](https://github.com/mishoo/UglifyJS) to make the
+loading of the script a tiny bit faster
 
 ## Install as a KWin script
 
