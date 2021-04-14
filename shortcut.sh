@@ -3,6 +3,16 @@
 SCRIPT=contents/code/main.js
 SCRIPT_MOD=.shortcut.js
 
+is_debug() {
+  case "$1" in
+    -d|--debug|-x)
+      return
+      ;;
+  esac
+
+  [[ "$-" =~ x ]] || [[ -n "$DEBUG" ]]
+}
+
 patch_script() {
   # NOTE Do not use -r here to avoid escaping the parenthesis
   local content
@@ -28,8 +38,10 @@ then
 
   # Check if we are being run with -x (as in bash -x ./shortcut.sh)
   # and pass the -x along to run.sh if it the case
-  if [[ "$-" =~ x ]]
+  if is_debug "$@"
   then
+    echo "🐛 DEBUG MODE" >&2
+    set -x
     # Add -x to the bash opts for run.sh
     bash_opts="-x"
     # Do not run uglifyjs over our main script
