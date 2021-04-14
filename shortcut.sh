@@ -17,5 +17,8 @@ then
   patch_script > "$SCRIPT_MOD"
   trap 'rm -f "$SCRIPT_MOD"' EXIT INT
 
-  ./run.sh "$SCRIPT_MOD"
+  # Check if we are being run with -x (as in bash -x ./shortcut.sh)
+  # and pass the -x along to run.sh if it the case
+  [[ "$-" =~ x ]] && bash_opts="-x"
+  bash $bash_opts ./run.sh "$SCRIPT_MOD"
 fi
