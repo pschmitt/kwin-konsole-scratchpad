@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
 
-generate_file_content() {
+SCRIPT=contents/code/main.js
+SCRIPT_MOD=.shortcut.js
+
+patch_script() {
+  # NOTE Do not use -r here to avoid escaping the parenthesis
   sed \
     's/^main();$/mainInteractive();/' \
-    contents/code/main.js
-}
-
-create_file() {
-  local tmpfile
-  tmpfile="$(mktemp --suffix .js)"
-  generate_file_content >> "$tmpfile"
-  echo "$tmpfile"
+    "$SCRIPT"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
 
-  f="$(create_file)"
-  trap 'rm -f "$f"' EXIT INT
-  ./run.sh "$f"
+  patch_script > "$SCRIPT_MOD"
+  trap 'rm -f "$SCRIPT_MOD"' EXIT INT
+
+  ./run.sh "$SCRIPT_MOD"
 fi

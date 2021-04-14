@@ -30,20 +30,28 @@ then
   exit 1
 fi
 
-# https://unix.stackexchange.com/a/517690/101415
-num=$(dbus-send --print-reply \
-        --dest=org.kde.KWin \
-        /Scripting org.kde.kwin.Scripting.loadScript \
-        string:"$script" | \
-        awk 'END {print $2}')
+# Unload previous scripts
+while [[ "$(qdbus \
+  org.kde.KWin \
+  /Scripting \
+  org.kde.kwin.Scripting.unloadScript \
+  "$script")" == "true" ]]
+do
+  sleep 0.01
+done
 
-if [[ -z "$num" ]]
+# https://unix.stackexchange.com/a/517690/101415
+kwin_id=$(qdbus \
+  org.kde.KWin \
+  /Scripting org.kde.kwin.Scripting.loadScript \
+  "$script")
+
+if [[ -z "$kwin_id" ]]
 then
-  echo "Failed to determine Plasma session ID"
+  echo "Failed to determine KWin script ID"
   exit 3
 fi
 
-dbus-send --print-reply --dest=org.kde.KWin "/${num}" \
-    org.kde.kwin.Scripting.run
+qdbus org.kde.KWin "/${kwin_id}" org.kde.kwin.Scripting.run
 
 # vim: set ft=sh et ts=2 sw=2 :
