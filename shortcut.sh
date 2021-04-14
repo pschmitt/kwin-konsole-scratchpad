@@ -5,9 +5,21 @@ SCRIPT_MOD=.shortcut.js
 
 patch_script() {
   # NOTE Do not use -r here to avoid escaping the parenthesis
-  sed \
-    's/^main();$/mainInteractive();/' \
-    "$SCRIPT"
+  local content
+  content="$(sed 's/^main();$/mainInteractive();/' "$SCRIPT")"
+
+  if command -v uglifyjs >/dev/null
+  then
+    uglifyjs \
+      --compress \
+      --toplevel \
+      --mangle \
+      --rename \
+      --no-annotations \
+      <<< "$content"
+  else
+    echo "$content"
+  fi
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
