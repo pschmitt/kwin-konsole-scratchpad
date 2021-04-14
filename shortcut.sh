@@ -16,15 +16,6 @@ usage() {
   echo "  -h HEIGHT     Relative height (eg: 0.6 for 60% of the screen)"
 }
 
-is_debug() {
-  case "$1" in
-    -d|--debug|-x)
-      return
-      ;;
-  esac
-
-}
-
 patch_global_var() {
   local var="$1"
   local value="$2"
