@@ -1,3 +1,5 @@
+"use strict";
+
 // User preferences
 const resourceName = "konsole";
 const caption = "tmux:scratchpad";
