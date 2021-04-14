@@ -44,10 +44,15 @@ then
     set -x
     # Add -x to the bash opts for run.sh
     bash_opts="-x"
-    # Do not run uglifyjs over our main script
-    NOCOMPRESS=1
+    # Only compress the script if COMPRESS is explicitly set
+    # shellcheck disable=2153
+    if [[ -n "$COMPRESS" ]]
+    then
+      # Do not run uglifyjs over our main script
+      NOCOMPRESS=1
+    fi
   else
-    # Don't remove the generated script if run with -x
+    # Only remove the patched script if not in debug mode
     trap 'rm -f "$SCRIPT_MOD"' EXIT INT
   fi
 
