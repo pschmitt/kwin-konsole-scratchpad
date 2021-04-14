@@ -31,14 +31,17 @@ then
 fi
 
 # Unload previous scripts
+unload_counter=0
 while [[ "$(qdbus \
   org.kde.KWin \
   /Scripting \
   org.kde.kwin.Scripting.unloadScript \
   "$script")" == "true" ]]
 do
-  sleep 0.01
+  (( unload_counter++ ))
 done
+
+echo "Unloaded $unload_counter previous versions" >&2
 
 # https://unix.stackexchange.com/a/517690/101415
 kwin_id=$(qdbus \
