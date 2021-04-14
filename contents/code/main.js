@@ -32,7 +32,7 @@ var signalSetup = false;
 
 // Debug functions {{{
 function log(message) {
-  if (debug == false) {
+  if (debug === false) {
     return
   }
 
@@ -43,7 +43,7 @@ function objectToString(object, sep) {
   var output = '';
   for (var property in object) {
     output += property + ': ' + object[property] +
-      (sep == undefined ? '\n' : sep);
+      (typeof sep === 'undefined' ? '\n' : sep);
   }
   return output
 }
@@ -101,7 +101,7 @@ function setWindowProps(client) {
 }
 
 function isValidClient(client) {
-  if (client == undefined || client.caption == undefined) {
+  if (typeof client === 'undefined' || typeof client.caption === 'undefined') {
     log("😕 Unprocessable/invalid client. SKIP");
     log(objectToString(client));
     return false;
@@ -115,7 +115,7 @@ function processClient(client) {
   }
 
   log("🔍 Processing client: " + client.caption);
-  if (verbose == true) {
+  if (verbose === true) {
     log(objectToString(client));
   }
 
@@ -132,7 +132,7 @@ function processClient(client) {
 }
 
 const newWindowWatcher = function (client) {
-  if (workspace == undefined) {
+  if (typeof workspace === 'undefined') {
     log("💩 Workspace is undefined. We probably got cancelled.");
     disconnectSignals();
   }
@@ -140,7 +140,7 @@ const newWindowWatcher = function (client) {
   const runtime = new Date() - startTime;
   if (runtime > maxRuntime) {
     log("⌛ Timed out. It's been fun. Now let's seppuku real quick.");
-    if (verbose == true) {
+    if (verbose === true) {
       log("🕜 Runtime: " + runtime + "ms");
     }
     disconnectSignals();
