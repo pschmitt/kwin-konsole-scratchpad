@@ -1,4 +1,3 @@
-
 // User preferences
 const resourceName = "konsole";
 const caption = "tmux:scratchpad";
@@ -111,7 +110,7 @@ function isValidClient(client) {
 }
 
 function processClient(client) {
-  if (!isValidClient(client)) {
+  if (isValidClient(client) === false) {
     return false;
   }
 
@@ -132,7 +131,9 @@ function processClient(client) {
   return false;
 }
 
-const newWindowWatcher = function (client) {
+const newWindowWatcher = function (event, client) {
+  log("❗ Event " + event + " triggered.")
+
   if (typeof workspace === 'undefined') {
     log("💩 Workspace is undefined. We probably got cancelled.");
     disconnectSignals();
@@ -148,13 +149,25 @@ const newWindowWatcher = function (client) {
     return false;
   }
 
-  if (processClient(client)) {
-    setWindowProps(client);
-    disconnectSignals();
-    return true;
+  try {
+    if (processClient(client)) {
+      setWindowProps(client);
+      disconnectSignals();
+      return true;
+    }
+  } catch (err) {
+    log("🤕 Exception caught while processing event " + event + ": " + err);
   }
 
   return false;
+}
+
+var newWindowWatcherClientActivated = function (client) {
+  return newWindowWatcher("clientActivated", client);
+}
+
+var newWindowWatcherClientAdded = function (client) {
+  return newWindowWatcher("clientAdded", client);
 }
 
 function disconnectSignals() {
@@ -162,10 +175,10 @@ function disconnectSignals() {
 
   if (signalSetup === true) {
     try {
-      workspace.clientAdded.disconnect(newWindowWatcher);
-      workspace.clientActivated.disconnect(newWindowWatcher);
+      workspace.clientAdded.disconnect(newWindowWatcherClientAdded);
+      workspace.clientActivated.disconnect(newWindowWatcherClientActivated);
     } catch (err) {
-      log("🤕 WOOPS. Exception raised during disconnect: " + err);
+      log("🤕 Exception raised during disconnect: " + err);
     }
   }
 
@@ -174,7 +187,7 @@ function disconnectSignals() {
     try {
       watchedClients[i].captionChanged.disconnect(watchers[i]);
     } catch (err) {
-      log("🤕 WOOPS. Exception raised during (client.cation) disconnect: " + err);
+      log("🤕 Exception raised during (client.cation) disconnect: " + err);
     }
   }
 
@@ -202,7 +215,7 @@ function monitorClientCaptionChanges(client) {
   log("📷 Caption does not match. " +
     "But we'll be watching for caption changes");
 
-  var watcher = function () {newWindowWatcher(client);}
+  var watcher = function () {newWindowWatcher("captionChanged", client);}
   var num = watchers.push(watcher);
   client.captionChanged.connect(watcher);
   watchedClients.push(client);
@@ -214,10 +227,11 @@ function monitorClientCaptionChanges(client) {
 
 function searchScratchpad(monitor) {
   const clients = workspace.clientList();
+
   for (var i = 0; i < clients.length; i++) {
     const cl = clients[i];
 
-    log("Checking client: " + cl);
+    log("👀 Checking client: " + cl);
 
     if (isValidClient(cl)) {
       if (processClient(cl)) {
@@ -225,7 +239,7 @@ function searchScratchpad(monitor) {
         disconnectSignals();
         return true;
       } else if ((monitor === true) && (cl.resourceName == resourceName)) {
-        log("Monitor client for caption changes: " + cl.caption);
+        log("🤨 Monitor client for caption changes: " + cl.caption);
         monitorClientCaptionChanges(cl);
       }
     }
@@ -240,11 +254,15 @@ function connectSignals() {
   startTime = new Date();
 
   // Monitor existing clients
-  searchScratchpad(true);
+  try {
+    searchScratchpad(true);
+  } catch (err) {
+    log("🤕 Exception during initial scratchpad search: " + err);
+  }
 
   // Monitor new clients
-  workspace.clientAdded.connect(newWindowWatcher);
-  workspace.clientActivated.connect(newWindowWatcher);
+  workspace.clientAdded.connect(newWindowWatcherClientAdded);
+  workspace.clientActivated.connect(newWindowWatcherClientActivated);
   signalSetup = true;
 }
 
@@ -261,7 +279,6 @@ function toggleScratchpad() {
     function () {connectSignals();}
   );
 }
-
 
 // Main wrapper for toggleScratchpad, call this instead of main() when running
 // inside of the KWin debug console
