@@ -1,3 +1,4 @@
+
 // User preferences
 const resourceName = "konsole";
 const caption = "tmux:scratchpad";
@@ -159,17 +160,28 @@ const newWindowWatcher = function (client) {
 function disconnectSignals() {
   log("🌜 Disconnecting from all signals");
 
-  workspace.clientAdded.disconnect(newWindowWatcher);
-  workspace.clientActivated.disconnect(newWindowWatcher);
+  if (signalSetup === true) {
+    try {
+      workspace.clientAdded.disconnect(newWindowWatcher);
+      workspace.clientActivated.disconnect(newWindowWatcher);
+    } catch (err) {
+      log("🤕 WOOPS. Exception raised during disconnect: " + err);
+    }
+  }
 
   for (var i = 0; i < watchedClients.length; i++) {
     log('🌚 Disconnecting from "' + watchedClients[i].caption + '"');
-    watchedClients[i].captionChanged.disconnect(watchers[i]);
+    try {
+      watchedClients[i].captionChanged.disconnect(watchers[i]);
+    } catch (err) {
+      log("🤕 WOOPS. Exception raised during (client.cation) disconnect: " + err);
+    }
   }
 
   // Clear arrays
   watchedClients.length = 0;
   watchers.length = 0;
+  signalSetup = false;
 }
 
 function isAlreadyMonitored(client) {
@@ -189,12 +201,37 @@ function monitorClientCaptionChanges(client) {
 
   log("📷 Caption does not match. " +
     "But we'll be watching for caption changes");
-  watchedClients.push(client);
+
   var watcher = function () {newWindowWatcher(client);}
   var num = watchers.push(watcher);
   client.captionChanged.connect(watcher);
+  watchedClients.push(client);
+
   log("🛂 We're currently watching " + num + " clients")
+
   return true;
+}
+
+function searchScratchpad(monitor) {
+  const clients = workspace.clientList();
+  for (var i = 0; i < clients.length; i++) {
+    const cl = clients[i];
+
+    log("Checking client: " + cl);
+
+    if (isValidClient(cl)) {
+      if (processClient(cl)) {
+        setWindowProps(cl);
+        disconnectSignals();
+        return true;
+      } else if ((monitor === true) && (cl.resourceName == resourceName)) {
+        log("Monitor client for caption changes: " + cl.caption);
+        monitorClientCaptionChanges(cl);
+      }
+    }
+  }
+
+  return false;
 }
 
 function connectSignals() {
@@ -203,29 +240,18 @@ function connectSignals() {
   startTime = new Date();
 
   // Monitor existing clients
-  const clients = workspace.clientList();
-  for (var i = 0; i < clients.length; i++) {
-    const cl = clients[i];
-
-    log("Checking Existing client: " + cl);
-
-    if (isValidClient(cl)) {
-      if (processClient(cl)) {
-        setWindowProps(cl);
-        disconnectSignals();
-        return true;
-      } else if (cl.resourceName == resourceName) {
-        monitorClientCaptionChanges(cl);
-      }
-    }
-  }
+  searchScratchpad(true);
 
   // Monitor new clients
   workspace.clientAdded.connect(newWindowWatcher);
   workspace.clientActivated.connect(newWindowWatcher);
+  signalSetup = true;
 }
 
 function toggleScratchpad() {
+  // Apply rules to any currently displayed scratchpad
+  searchScratchpad(false);
+
   callDBus(
     "org.kde.kglobalaccel",
     "/component/konsole",
