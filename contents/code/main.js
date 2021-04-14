@@ -119,7 +119,7 @@ function processClient(client) {
     log(objectToString(client));
   }
 
-  if (client.resourceName == resourceName) {
+  if (client.resourceName === resourceName) {
     if (client.caption.indexOf(caption) > -1) {
       log("✅ Found scratchpad: " + client.caption);
       return true;
@@ -199,7 +199,7 @@ function disconnectSignals() {
 
 function isAlreadyMonitored(client) {
   for (var i = 0; i < watchedClients.length; i++) {
-    if (watchedClients[i].internalId == client.internalId) {
+    if (watchedClients[i].internalId === client.internalId) {
       return true;
     }
   }
@@ -238,7 +238,7 @@ function searchScratchpad(monitor) {
         setWindowProps(cl);
         disconnectSignals();
         return true;
-      } else if ((monitor === true) && (cl.resourceName == resourceName)) {
+      } else if ((monitor === true) && (cl.resourceName === resourceName)) {
         log("🤨 Monitor client for caption changes: " + cl.caption);
         monitorClientCaptionChanges(cl);
       }
