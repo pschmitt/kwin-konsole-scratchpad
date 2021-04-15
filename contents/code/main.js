@@ -228,6 +228,7 @@ function monitorClientCaptionChanges(client) {
 }
 
 function searchScratchpad(monitor) {
+  log("🔰 Starting search for scratchpad window");
   const clients = workspace.clientList();
 
   for (var i = 0; i < clients.length; i++) {
@@ -251,8 +252,7 @@ function searchScratchpad(monitor) {
 }
 
 function connectSignals() {
-  log("🔆 Connecting to signals");
-
+  // Remember start time
   startTime = new Date();
 
   // Monitor existing clients
@@ -262,6 +262,8 @@ function connectSignals() {
     log("🤕 Exception during initial scratchpad search: " + err);
   }
 
+  log("🔆 Connecting to signals");
+
   // Monitor new clients
   workspace.clientAdded.connect(newWindowWatcherClientAdded);
   workspace.clientActivated.connect(newWindowWatcherClientActivated);
@@ -269,8 +271,20 @@ function connectSignals() {
 }
 
 function toggleScratchpad() {
+  // Default callback function
+  var callback = connectSignals;
   // Apply rules to any currently displayed scratchpad
-  searchScratchpad(false);
+  var found = searchScratchpad(false);
+
+  if (found === true) {
+    callback = function () {
+      log("⏩ Scratchpad currently displayed. " +
+        "It should get hidden in this iteration. " +
+        "Skipping signal setup.");
+    };
+  }
+
+  log("🔳 Toggling Konsole's Background Mode");
 
   callDBus(
     "org.kde.kglobalaccel",
@@ -278,7 +292,7 @@ function toggleScratchpad() {
     "org.kde.kglobalaccel.Component",
     "invokeShortcut",
     "Konsole Background Mode",
-    function () {connectSignals();}
+    callback
   );
 }
 
