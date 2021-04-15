@@ -121,7 +121,7 @@ function processClient(client) {
     log(objectToString(client));
   }
 
-  if (client.resourceName === resourceName) {
+  if (client.resourceName == resourceName) {
     if (client.caption.indexOf(caption) > -1) {
       log("✅ Found scratchpad: " + client.caption);
       return true;
