@@ -201,7 +201,7 @@ function disconnectSignals() {
 
 function isAlreadyMonitored(client) {
   for (var i = 0; i < watchedClients.length; i++) {
-    if (watchedClients[i].internalId === client.internalId) {
+    if (watchedClients[i].internalId == client.internalId) {
       return true;
     }
   }
