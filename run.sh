@@ -41,7 +41,7 @@ do
   (( unload_counter++ ))
 done
 
-echo "Unloaded $unload_counter previous versions" >&2
+echo "Unloaded $unload_counter previous version(s)" >&2
 
 # https://unix.stackexchange.com/a/517690/101415
 kwin_id=$(qdbus \
