@@ -9,8 +9,8 @@ const caption = "tmux:scratchpad";
 // Allowed values: "top", "bottom", "center"
 const position = "bottom";
 const offset = 15; // Offset in pixels
-const scratchpadRelativeWidth = 1.0; // 100% of the usable screen area
-const scratchpadRelativeHeight = 0.5; // 50% of the usable screen area
+const width = 1.0; // 100% of the usable screen area
+const height = 0.5; // 50% of the usable screen area
 
 // Skip pager/switcher/taskbar
 const keepAbove = true;
@@ -63,6 +63,11 @@ function objectToString(object, sep) {
 }
 // }}}
 
+// https://stackoverflow.com/a/3885844/1872036
+function isFloat(n) {
+  return n === +n && n !== (n | 0);
+}
+
 function setWindowProps(client) {
   log("💄 Setting window properties for " + client.caption);
 
@@ -76,10 +81,31 @@ function setWindowProps(client) {
 
   // Set scratchpad geometry
   const client_geom = client.geometry;
-  client_geom.width = Math.round(maxBounds.width * scratchpadRelativeWidth);
-  client_geom.height = Math.round(maxBounds.height * scratchpadRelativeHeight);
+
+  // Set target window dimensions
+  // NOTE: All (float!) dimensions that are less than 10 are considered to be
+  // a % of the screen size, since isFloat(1.0) returns true ;)
+  // Super tiny scratchpad terminals don't make sense to me
+  if ((isFloat(width)) || (width < 10)) {
+    log("📐 Set window width to " + Math.round(width * 100.0) + "%");
+    client_geom.width = Math.round(maxBounds.width * width);
+  } else {
+    log("📏 Set window width to " + width + " pixels");
+    client_geom.width = width;
+  }
+
+  if ((isFloat(height)) || (height < 10)) {
+    log("📐 Set window height to " + Math.round(height * 100.0) + "%");
+    client_geom.height = Math.round(maxBounds.height * height);
+  } else {
+    log("📏 Set window height to " + height + " pixels");
+    client_geom.height = height;
+  }
+
+  // Set window position
   switch (position) {
     case "bottom":
+      log("🔻 Position the window at the bottom of the screen");
       // center client horizontally
       client_geom.x = maxBounds.x +
         Math.round((maxBounds.width - client_geom.width) / 2);
@@ -87,18 +113,23 @@ function setWindowProps(client) {
         maxBounds.y + offset;
       break;
     case "top":
+      log("🔺 Position the window at the top of the screen");
       // center client horizontally
       client_geom.x = maxBounds.x +
         Math.round((maxBounds.width - client_geom.width) / 2);
       client_geom.y = maxBounds.y + offset;
       break;
     case "center":
+      log("🎯 Position the window at the center of the screen");
       // center client horizontally
       client_geom.x = maxBounds.x +
         Math.round((maxBounds.width - client_geom.width) / 2);
       // center client vertically
       client_geom.y = maxBounds.y +
         Math.round((maxBounds.height - client_geom.height) / 2);
+      break;
+    default:
+      log("🔴 Invalid window position");
       break;
   }
   client.geometry = client_geom;
@@ -213,7 +244,11 @@ function monitorClientCaptionChanges(client) {
   return true;
 }
 
-function searchScratchpad(monitor) {
+function searchScratchpad(monitor, applyProps) {
+  // Default values
+  monitor = (typeof monitor !== 'undefined') ? monitor : true;
+  applyProps = (typeof applyProps !== 'undefined') ? applyProps : true;
+
   log("🔰 Starting search for scratchpad window");
 
   const clients = workspace.clientList();
@@ -225,7 +260,9 @@ function searchScratchpad(monitor) {
     log("👀 Checking client: " + cl);
 
     if (processClient(cl)) {
-      setWindowProps(cl);
+      if (applyProps === true) {
+        setWindowProps(cl);
+      }
       disconnectSignals();
       return true;
     } else if ((monitor === true) && (cl.resourceName === resourceName)) {
@@ -274,7 +311,7 @@ function connectSignals() {
 
   // Monitor existing clients for caption changes
   try {
-    found = searchScratchpad(true);
+    found = searchScratchpad(true, true);
   } catch (err) {
     logError("during initial scratchpad search", err);
   }
@@ -298,7 +335,7 @@ function toggleScratchpad() {
   // Default callback function
   var callback = connectSignals;
   // Apply rules to any currently displayed scratchpad
-  var found = searchScratchpad(false);
+  var found = searchScratchpad(false, true);
 
   if (found === true) {
     callback = function () {
@@ -308,7 +345,7 @@ function toggleScratchpad() {
     };
   } else {
     log("🥋 Scratchpad window currrently not displayed. " +
-      "It should appear soon.");
+      "It should appear soon™");
   }
 
   log("🔳 Toggling Konsole's Background Mode");

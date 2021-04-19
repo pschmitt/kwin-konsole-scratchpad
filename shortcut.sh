@@ -43,12 +43,6 @@ patch_global_vars() {
         resource_name)
           js_var=resourceName
           ;;
-        width)
-          js_var=scratchpadRelativeWidth
-          ;;
-        height)
-          js_var=scratchpadRelativeHeight
-          ;;
       esac
 
       content="$(patch_global_var "$js_var" "$value" "$content")"
