@@ -145,8 +145,17 @@ then
   fi
 
   patch_script > "$SCRIPT_MOD"
-  if ! bash $bash_opts ./run.sh "$SCRIPT_MOD"
+  if bash $bash_opts ./run.sh "$SCRIPT_MOD"
   then
+    # For some reason the scratchpad Konsole does not always get the focus,
+    # despite explicitely setting the active client in main.js
+    # -> try focussing the scratchpad window with wmctrl
+    # TODO Wayland support
+    if [[ "$XDG_SESSION_TYPE" == "x11" ]] && command -v wmctrl > /dev/null
+    then
+      wmctrl -R scratchpad
+    fi
+  else
     notify-send \
       -u critical \
       -t 5000 \
