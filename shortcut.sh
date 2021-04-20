@@ -176,6 +176,7 @@ then
     trap 'rm -f "$SCRIPT_MOD"' EXIT INT
   fi
 
+  konsole_is_displayed && konsole_displayed=1
   patch_script > "$SCRIPT_MOD"
   if bash $bash_opts ./run.sh "$SCRIPT_MOD"
   then
@@ -183,7 +184,7 @@ then
     # despite explicitely setting the active client in main.js
     # -> try focussing the scratchpad window with wmctrl
     # TODO Wayland support
-    force_focus_scratchpad
+    [[ -z "$konsole_displayed" ]] && force_focus_scratchpad
   else
     notify-send \
       -u critical \
