@@ -9,7 +9,7 @@ usage() {
   echo "Actions:"
   echo "  show          Display Konsole Scratchpad"
   echo "  hide          Hide Konsole Scratchpad"
-  echo "  toggle        Toggle Konsole Scratchpad"
+  echo "  toggle        Toggle Konsole Scratchpad (default)"
   echo
   echo "Options:"
   echo "  --help        Display this message"
