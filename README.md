@@ -59,6 +59,22 @@ systemctl --user enable --now konsole-scratchpad.service
 Once done you should be able to show/hide your Konsole scratchpad with the 
 "Toggle Konsole Scratchpad" shortcut (<kbd>F1</kbd> by default)
 
+### NOTE
+
+For this script to work reliably you need to ensure that Konsole's window/tab 
+title contains the `caption` set in 
+[./contents/code/main.js](./contents/code/main.js).
+
+To do this you can either:
+- set a static title in your Konsole profile 
+- make the startup program set it at runtime (provided that in your Konsole 
+profile the "Tab Title Format" contains `%w`) with:
+
+```shell
+title="scratchpad"
+echo -ne "\e]0;${title}\a"
+```
+
 # Uninstall
 
 1. Run [`./uninstall.sh`](./uninstall.sh)
