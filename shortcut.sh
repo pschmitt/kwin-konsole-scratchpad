@@ -76,6 +76,38 @@ patch_script() {
   fi
 }
 
+konsole_is_displayed() {
+  # TODO Wayland support
+  wmctrl -l | grep -qE "scratchpad.*Konsole"
+}
+
+force_focus_scratchpad() {
+  if [[ "$XDG_SESSION_TYPE" != "x11" ]]
+  then
+    echo "Force focussing on scratchpad in not yet supported on Wayland" >&2
+    return
+  fi
+
+  echo -n "Waiting for Konsole window to appear..."
+  local counter=0
+
+  while ! konsole_is_displayed
+  do
+    if [[ "$counter" -gt 25 ]]
+    then
+      echo "Timed out." >&2
+      return 3
+    fi
+
+    sleep 0.1
+    (( counter += 1 ))
+  done
+  echo " Done."
+
+  # Focus scatchpad window
+  wmctrl -R scratchpad
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
@@ -151,10 +183,7 @@ then
     # despite explicitely setting the active client in main.js
     # -> try focussing the scratchpad window with wmctrl
     # TODO Wayland support
-    if [[ "$XDG_SESSION_TYPE" == "x11" ]] && command -v wmctrl > /dev/null
-    then
-      wmctrl -R scratchpad
-    fi
+    force_focus_scratchpad
   else
     notify-send \
       -u critical \
