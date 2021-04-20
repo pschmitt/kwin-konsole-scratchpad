@@ -10,8 +10,8 @@ git clone https://github.com/pschmitt/kwin-konsole-scratchpad.git
 cd ./kwin-konsole-scratchpad
 ```
 2. Choose one of the following two install paths:
-  - [Shortcut only](#tldr-shortcut-only)
-  - [KWin script](#install-as-a-kwin-script) (**recommended**)
+  - [Shortcut only](#tldr-shortcut-only) (**recommended**)
+  - [KWin script](#install-as-a-kwin-script)
 
 ## TL;DR (Shortcut only)
 
