@@ -76,9 +76,25 @@ patch_script() {
   fi
 }
 
+get_caption() {
+  cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
+
+  awk "/const caption/ { print \$4; exit }" "$SCRIPT" | \
+    sed -nr 's/"(.+)";/\1/p'
+}
+
 konsole_is_displayed() {
+  local caption
+  caption="${CAPTION:-$(get_caption)}"
+
+  if [[ -z "$caption" ]]
+  then
+    echo "Failed to extract caption from main.js" >&2
+    return 1
+  fi
+
   # TODO Wayland support
-  wmctrl -l | grep -qE "scratchpad.*Konsole"
+  wmctrl -l | grep -qE "${caption}.*Konsole"
 }
 
 force_focus_scratchpad() {
@@ -105,7 +121,7 @@ force_focus_scratchpad() {
   echo " Done."
 
   # Focus scatchpad window
-  wmctrl -R scratchpad
+  wmctrl -R "$CAPTION"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
@@ -174,6 +190,13 @@ then
   else
     # Only remove the patched script if not in debug mode
     trap 'rm -f "$SCRIPT_MOD"' EXIT INT
+  fi
+
+  # Make sure caption is defined. This will avoid parsing the JS file multiple
+  # times (when waiting for window to appear for eg)
+  if [[ -z "$CAPTION" ]]
+  then
+    CAPTION="$(get_caption)"
   fi
 
   konsole_is_displayed && konsole_displayed=1
