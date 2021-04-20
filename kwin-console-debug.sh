@@ -31,4 +31,8 @@ fi
 
 set_clipboard <<< "$CONTENT"
 
-./kwin-console.sh
+# Start Kwin debug console
+qdbus \
+  org.kde.plasmashell \
+  /PlasmaShell \
+  org.kde.PlasmaShell.showInteractiveKWinConsole
