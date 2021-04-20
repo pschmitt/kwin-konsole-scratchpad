@@ -213,7 +213,7 @@ then
     bash_opts="-x"
     # Only compress the script if COMPRESS is explicitly set
     # shellcheck disable=2153
-    if [[ -n "$COMPRESS" ]]
+    if [[ -z "$COMPRESS" ]]
     then
       # Do not run uglifyjs over our main script
       NOCOMPRESS=1
