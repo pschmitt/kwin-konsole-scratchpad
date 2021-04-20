@@ -16,8 +16,8 @@ cd ./kwin-konsole-scratchpad
 ## TL;DR (Shortcut only)
 
 1. Setup a custom shortcut that triggers 
-[`./konsole-background-mode.sh`](./konsole-background-mode.sh) 
-(Optional flags available. See `./konsole-background-mode.sh --help`).
+[`./konsole-scratchpad.sh`](./konsole-scratchpad.sh) 
+(Optional flags available. See `./konsole-scratchpad.sh --help`).
 2. Set up a scratchpad service (see [below](#setup-a-scratchpad-service))
 3. *Optional* Install [uglifyjs](https://github.com/mishoo/UglifyJS) to make the
 loading of the script a tiny bit faster
