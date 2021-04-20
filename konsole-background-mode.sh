@@ -1,12 +1,27 @@
 #!/usr/bin/env bash
 
 usage() {
-  echo "Usage: $(basename "$0") show|hide"
+  echo "Usage: $(basename "$0") show|hide|toggle"
+}
+
+get_caption() {
+  cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
+  awk "/const caption/ { print \$4; exit }" contents/code/main.js | \
+    sed -nr 's/"(.+)";/\1/p'
 }
 
 konsole_is_displayed() {
+  local caption
+  caption="$(get_caption)"
+
+  if [[ -z "$caption" ]]
+  then
+    echo "Failed to extract caption from main.js" >&2
+    return 1
+  fi
+
   # TODO Wayland support
-  wmctrl -l | grep -qE "scratchpad.*Konsole"
+  wmctrl -l | grep -qE "${caption}.*Konsole"
 }
 
 konsole_hide() {
@@ -45,6 +60,10 @@ then
         ACTION=hide
         shift
         ;;
+      toggle)
+        ACTION=toggle
+        shift
+        ;;
       *)
         break
         ;;
@@ -52,7 +71,7 @@ then
   done
 
   case "$ACTION" in
-    show|hide)
+    show|hide|toggle)
       "konsole_${ACTION}"
       ;;
     *)
