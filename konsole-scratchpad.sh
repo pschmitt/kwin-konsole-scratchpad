@@ -193,12 +193,12 @@ then
   done
 
   # Check if we are being run with -x (as in bash -x ./shortcut.sh)
-  # and pass the -x along to run.sh if it the case
+  # and pass the -x along to kwinscript-run.sh if it the case
   if [[ -n "$DEBUG" ]]
   then
     echo "🐛 DEBUG MODE" >&2
     set -x
-    # Add -x to the bash opts for run.sh
+    # Add -x to the bash opts for kwinscript-run.sh
     bash_opts="-x"
     # Only compress the script if COMPRESS is explicitly set
     # shellcheck disable=2153
@@ -235,7 +235,7 @@ then
   esac
 
   patch_script > "$SCRIPT_MOD"
-  if bash $bash_opts ./run.sh "$SCRIPT_MOD"
+  if bash $bash_opts ./kwinscript-run.sh "$SCRIPT_MOD"
   then
     # For some reason the scratchpad Konsole does not always get the focus,
     # despite explicitely setting the active client in main.js
