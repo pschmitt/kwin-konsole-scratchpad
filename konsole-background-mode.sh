@@ -174,15 +174,15 @@ then
         HEIGHT="$2"
         shift 2
         ;;
-      show)
+      show|s|on)
         ACTION=show
         shift
         ;;
-      hide)
+      hide|h|off)
         ACTION=hide
         shift
         ;;
-      toggle)
+      toggle|t)
         ACTION=toggle
         shift
         ;;
