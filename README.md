@@ -16,7 +16,7 @@ cd ./kwin-konsole-scratchpad
 ## TL;DR (Shortcut only)
 
 1. Setup a custom shortcut that triggers [`./shortcut.sh`](./shortcut.sh)
-2. Set up a scratchpad service (see below)
+2. Set up a scratchpad service (see [below](#setup-a-scratchpad-service))
 3. *Optional* Install [uglifyjs](https://github.com/mishoo/UglifyJS) to make the
 loading of the script a tiny bit faster
 
@@ -27,7 +27,7 @@ loading of the script a tiny bit faster
 3. Open System Settings: `Window Management > KWin Scripts` and make sure 
 that "Konsole Scratchpad" is enabled
 4. Setup a custom key binding for "Toggle Konsole Scratchpad"
-5. Set up a scratchpad service (see below)
+5. Set up a scratchpad service (see [below](#setup-a-scratchpad-service))
 
 ## Setup a scratchpad service
 
