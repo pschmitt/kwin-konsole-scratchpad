@@ -45,6 +45,10 @@ konsole_toggle() {
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
+
+  # Default action
+  ACTION=toggle
+
   while [[ -n "$*" ]]
   do
     case "$1" in
