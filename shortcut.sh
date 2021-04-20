@@ -213,6 +213,6 @@ then
       -u critical \
       -t 5000 \
       -a konsole-scratchpad \
-      "❌ Something went wrong while executing konsole-scratchpad's run.sh"
+      "❌ Something went wrong while executing konsole-scratchpad's $0"
   fi
 fi
