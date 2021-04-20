@@ -57,7 +57,7 @@ then
       ;;
     *)
       echo "Unknown action: $ACTION" >&2
-      return 1
+      exit 1
       ;;
   esac
 fi
