@@ -167,11 +167,22 @@ then
         shift 2
         ;;
       -w|--width)
-        WIDTH="$2"
+        # Convert 80% to 0.80 etc.
+        if [[ "$2" =~ %$ ]]
+        then
+          WIDTH="$(awk -v num="${2//%}" 'BEGIN { print(int(num) / 100.0) }')"
+        else
+          WIDTH="$2"
+        fi
         shift 2
         ;;
       -h|--height)
-        HEIGHT="$2"
+        if [[ "$2" =~ %$ ]]
+        then
+          HEIGHT="$(awk -v num="${2//%}" 'BEGIN { print(int(num) / 100.0) }')"
+        else
+          HEIGHT="$2"
+        fi
         shift 2
         ;;
       show|s|on)
