@@ -3,15 +3,21 @@ Description=Konsole scratchpad
 Documentation=https://github.com/pschmitt/kwin-scratchpad
 
 [Service]
-ExecStart=/usr/bin/sh -c "\
-  notify-send -t 1000 -a '%N' \
-    'Background Konsole is starting...'; \
+# Environment=DISPLAY=:0
+# Environment=WAYLAND_DISPLAY=wayland-0
+Environment=KONSOLE_SCRATCHPAD=1
+Environment=KONSOLE_WINDOW_TITLE=tmux:scratchpad
+Environment=KONSOLE_PROFILE=scratchpad
+ExecStartPre=-/usr/bin/notify-send -t 1000 -a '%N' \
+  'Background Konsole is starting...'
+ExecStart=/bin/sh -c "\
   konsole \
     --nofork \
     --background-mode \
     --hide-tabbar \
     --hide-menubar \
-    --profile scratchpad; \
+    --profile "${KONSOLE_PROFILE}" \
+    -e sh -c 'echo -ne \"\e]0;${KONSOLE_WINDOW_TITLE}\a\"; exec zsh;'; \
   notify-send -t 1000 -a '%N' \
     'Background Konsole stopped..!'"
 Restart=always
