@@ -8,7 +8,7 @@ const caption = "tmux:scratchpad";
 // where to place the scatchpad on the screen
 // Allowed values: "top", "bottom", "center"
 const position = "bottom";
-const offset = 15; // Offset in pixels
+const offset = 0; // Offset in pixels
 const width = 1.0; // 100% of the usable screen area
 const height = 0.5; // 50% of the usable screen area
 
